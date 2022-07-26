@@ -8,39 +8,38 @@ using Notebook.Domain;
 using Notes.Application.Common.Exceptions;
 using Notes.Application.Interfaces;
 
-namespace Notes.Application.Notes.DeleteCommand
+namespace Notes.Application.Notes.Commands.DeleteCommand;
+
+/// <summary>
+/// Обработчик команды удаления заметки
+/// </summary>
+public class DeleteNoteCommandHandler
+    : IRequestHandler<DeleteNoteCommand>
 {
+    private readonly INotesDBContext _dbContext;
+    public DeleteNoteCommandHandler(INotesDBContext dBContext) =>
+        _dbContext = dBContext;
+
     /// <summary>
-    /// Обработчик команды удаления заметки
+    /// Удаляет запись
     /// </summary>
-    public class DeleteNoteCommandHandler
-        : IRequestHandler<DeleteNoteCommand>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<Unit> Handle(DeleteNoteCommand request, //Unit -тип, обозначающий пустой ответ
+        CancellationToken cancellationToken)
     {
-        private readonly INotesDBContext _dbContext;
-        public DeleteNoteCommandHandler(INotesDBContext dBContext) =>
-            _dbContext = dBContext;
+        var entity = await _dbContext.Notes
+            .FindAsync(new object[] { request.Id},cancellationToken);
 
-        /// <summary>
-        /// Удаляет запись
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /// <exception cref="NotFoundException"></exception>
-        public async Task<Unit> Handle(DeleteNoteCommand request, //Unit -тип, обозначающий пустой ответ
-            CancellationToken cancellationToken)
+        if (entity == null || entity.UserId != request.UserId)
         {
-            var entity = await _dbContext.Notes
-                .FindAsync(new object[] { request.Id},cancellationToken);
-
-            if (entity == null || entity.UserId != request.UserId)
-            {
-                throw new NotFoundException(nameof(Note), request.Id);
-            }
-
-            _dbContext.Notes.Remove(entity);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            return Unit.Value;
+            throw new NotFoundException(nameof(Note), request.Id);
         }
+
+        _dbContext.Notes.Remove(entity);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return Unit.Value;
     }
 }

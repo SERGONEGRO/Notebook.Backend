@@ -5,12 +5,13 @@ using Notes.Application.Notes.Queries.GetNoteList;
 using Notes.Application.Notes.Queries.GetNoteDetail;
 using Notes.Application.Notes.Commands.CreateNote;
 using Notes.Application.Notes.Commands.UpdateNote;
+using Notes.Application.Notes.Commands.DeleteCommand;
 using Notes.WebApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Notes.Application.Notes.DeleteCommand;
+
 
 namespace Notes.WebApi.Controllers
 {
@@ -64,7 +65,7 @@ namespace Notes.WebApi.Controllers
         public async Task<ActionResult<Guid>> Create([FromBody] CreateNoteDto createNoteDto)
         {
             var command = _mapper.Map<CreateNoteCommand>(createNoteDto);
-            command.UseId = UserId;
+            command.UserId = UserId;
             var noteId = await Mediator.Send(command); 
             return Ok(noteId);
         }

@@ -22,7 +22,7 @@ namespace Notes.Application.Notes.Commands.CreateNote
         {
             var note = new Note
             {
-                UserId = request.UseId,
+                UserId = request.UserId,
                 Title = request.Title,
                 Details = request.Details,
                 Id = Guid.NewGuid(),

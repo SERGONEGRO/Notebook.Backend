@@ -1,14 +1,13 @@
 ﻿using System;
 using MediatR;
 
-namespace Notes.Application.Notes.DeleteCommand
+namespace Notes.Application.Notes.Commands.DeleteCommand;
+
+/// <summary>
+/// команда удаления заметки
+/// </summary>
+public class DeleteNoteCommand : IRequest
 {
-    /// <summary>
-    /// команда удаления заметки
-    /// </summary>
-    public class DeleteNoteCommand : IRequest
-    {
-        public Guid UserId { get; set; }
-        public Guid Id { get; set; }
-    }
+    public Guid UserId { get; set; }
+    public Guid Id { get; set; }
 }
