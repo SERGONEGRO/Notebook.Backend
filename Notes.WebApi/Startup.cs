@@ -9,6 +9,7 @@ using Notes.Application;
 using Notes.Application.Common.Mappings;
 using Notes.Application.Interfaces;
 using Notes.Persistance;
+using Notes.WebApi.Middleware;
 
 namespace Notes.WebApi
 {
@@ -54,17 +55,18 @@ namespace Notes.WebApi
 
         /// <summary>
         /// Здесь настраивается конвейер обработки запроса. Применяются все middleware
-        /// 
+        /// выполняются в том порядке, в ктором добавляются в конвейер
         /// </summary>
         /// <param name="app"></param>
         /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-           if (env.IsDevelopment())
-           {
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
-           }
+            }
 
+            app.UseCustomExceptionHandler(); //добавляем наш middleware
             app.UseRouting();
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
