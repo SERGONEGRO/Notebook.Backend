@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +51,18 @@ namespace Notes.WebApi
                     policy.AllowAnyOrigin();
                 });                 
             });
+
+            services.AddAuthentication(config =>
+            {
+                config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer("Bearer", options =>
+                 {
+                     options.Authority = "https://localhost:7214";
+                     options.Audience = "notesWebApi";
+                     options.RequireHttpsMetadata = false;
+                 });
         }
 
         /// <summary>
@@ -70,8 +82,8 @@ namespace Notes.WebApi
             app.UseRouting();
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
-
-
+            app.UseAuthentication();
+            app.UseAuthorization();
             //роутинг мапится на названия контроллеров и их методы
             app.UseEndpoints(endpoints =>
             {
