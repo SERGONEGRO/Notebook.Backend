@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notes.Persistance", "Notes.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notes.WebApi", "Notes.WebApi\Notes.WebApi.csproj", "{5D68C82A-0F0A-4A31-A1C8-AF3112D0296C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.Tests", "Notes.Tests\Notes.Tests.csproj", "{F5074543-FDFE-47A9-BFEC-1C3807A7B133}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notes.Tests", "Notes.Tests\Notes.Tests.csproj", "{F5074543-FDFE-47A9-BFEC-1C3807A7B133}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
