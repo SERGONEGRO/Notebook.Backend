@@ -10,6 +10,10 @@ using Notes.Application.Common.Mappings;
 using Notes.Application.Interfaces;
 using Notes.Persistance;
 using Notes.WebApi.Middleware;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Notes.WebApi.Controllers;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace Notes.WebApi
 {
@@ -64,13 +68,20 @@ namespace Notes.WebApi
                      options.RequireHttpsMetadata = false;
                  });
 
+            services.AddVersionedApiExplorer(options =>
+                options.GroupNameFormat = "'v'VVV");
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>,
+                ConfigureSwaggerOptions>();
+
             //добавляем сваггер
             services.AddSwaggerGen(config =>
             {   //настраиваем использование xml-файла
                 var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 config.IncludeXmlComments(xmlPath);
-            });  
+            });
+
+            services.AddApiVersioning();  //добавляем версионирование
         }
 
         /// <summary>
@@ -79,7 +90,8 @@ namespace Notes.WebApi
         /// </summary>
         /// <param name="app"></param>
         /// <param name="env"></param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
@@ -87,9 +99,18 @@ namespace Notes.WebApi
             }
             app.UseSwagger();
             app.UseSwaggerUI(config =>
-            {   //задаем адрес свагера по умолчанию
-                config.RoutePrefix = String.Empty;
-                config.SwaggerEndpoint("swagger/v1/swagger.json", "Notes Api");
+            {   //задаем адрес свагера по умолчанию в зависимости от версий API
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    config.SwaggerEndpoint(
+                        $"/swagger/{description.GroupName}/swagger.json",
+                        description.GroupName.ToUpperInvariant());
+                    config.RoutePrefix = String.Empty;
+                }
+
+                //задаем адрес свагера по умолчанию
+                //config.RoutePrefix = String.Empty;
+                //config.SwaggerEndpoint("swagger/v1/swagger.json", "Notes Api");
             });
             app.UseCustomExceptionHandler(); //добавляем наш middleware
             app.UseRouting();
@@ -97,6 +118,8 @@ namespace Notes.WebApi
             app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
+            //версионирование
+            app.UseApiVersioning();
             //роутинг мапится на названия контроллеров и их методы
             app.UseEndpoints(endpoints =>
             {

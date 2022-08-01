@@ -16,8 +16,11 @@ using System.Threading.Tasks;
 
 namespace Notes.WebApi.Controllers
 {   
+    [ApiVersion("1.0")]            //указываем версию Api
+    [ApiVersion("2.1")]
+    //[ApiVersionNeutral]            //контроллер будет вызван, даже если номер версии не указан
     [Produces("application/json")] //объявляет, что действия контроллера поддерживают тип содержимого ответа application/json
-    [Route("api/[controller]")]
+    [Route("api/{version:apiVersion}/[controller]")]
     public class NoteController : BaseController
     {
         //маппер, чтобы преобразовать входные данные в команду
