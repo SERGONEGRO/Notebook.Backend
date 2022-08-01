@@ -63,6 +63,14 @@ namespace Notes.WebApi
                      options.Audience = "notesWebApi";
                      options.RequireHttpsMetadata = false;
                  });
+
+            //добавляем сваггер
+            services.AddSwaggerGen(config =>
+            {   //настраиваем использование xml-файла
+                var xmlFile = $"{Assembly.GetEntryAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                config.IncludeXmlComments(xmlPath);
+            });  
         }
 
         /// <summary>
@@ -77,7 +85,12 @@ namespace Notes.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI(config =>
+            {   //задаем адрес свагера по умолчанию
+                config.RoutePrefix = String.Empty;
+                config.SwaggerEndpoint("swagger/v1/swagger.json", "Notes Api");
+            });
             app.UseCustomExceptionHandler(); //добавляем наш middleware
             app.UseRouting();
             app.UseHttpsRedirection();

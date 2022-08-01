@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Notes.Application.Common.Mappings;
 using Notes.Application.Notes.Commands.CreateNote;
+using System.ComponentModel.DataAnnotations;
+
 namespace Notes.WebApi.Models
 {
     /// <summary>
@@ -9,6 +11,7 @@ namespace Notes.WebApi.Models
     /// </summary>
     public class CreateNoteDto : IMapWith<CreateNoteCommand>
     {
+        [Required]
         public string Title { get; set; }
         public string Details { get; set; }
         public void Mapping(Profile profile)
